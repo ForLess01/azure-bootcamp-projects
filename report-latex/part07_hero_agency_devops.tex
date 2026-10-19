@@ -1,0 +1,69 @@
+\section{Parte 7: Proyecto de Integración CI/CD y DevOps: ``Hero Agency''}
+
+\subsection{7.1 Arquitectura del Proyecto de Votación y Empaquetado Docker}
+Para el proyecto de integración continua y entrega continua (\textbf{CI/CD}) de la sesión 11, se desarrolló la plataforma web interactiva de votación \textbf{``Hero Agency''}, construida en **Node.js 20** con el framework **Express**. La aplicación expone una API REST moderna con persistencia en memoria, interfaz de usuario reactiva y un endpoint especializado de verificación de salud operacional (\texttt{/health}).
+
+El contenedor se empaqueta utilizando una imagen base minimalista y endurecida (\texttt{node:20-alpine}), ejecutando el proceso bajo el usuario sin privilegios \texttt{node} para mitigar riesgos de escalada de privilegios en el clúster.
+
+\begin{azureterminal}[Dockerfile de Produccion - Hero Agency Voting Platform]
+FROM node:20-alpine AS base
+WORKDIR /usr/src/app
+COPY app/package*.json ./
+RUN npm install --only=production --silent
+COPY app/ ./
+EXPOSE 8080
+ENV PORT=8080 NODE_ENV=production
+USER node
+CMD ["node", "server.js"]
+\end{azureterminal}
+
+\subsection{7.2 Pipeline Multinivel en Azure Pipelines (5 Etapas Secuenciales)}
+Se formalizó el archivo orquestador de integración continua \textbf{\texttt{azure-pipelines.yml}} estructurado en 5 etapas secuenciales e interdependientes:
+
+\begin{enumerate}
+    \item \textbf{Stage 1: Build}: Compila y empaqueta la imagen Docker del microservicio, asociándole etiquetas inmutables (\texttt{\$(Build.BuildId)}) y la etiqueta flotante \texttt{latest}.
+    \item \textbf{Stage 2: Test}: Provisiona un entorno efímero Node.js, instala dependencias de desarrollo y ejecuta la suite de pruebas unitarias automatizadas con **Jest** y **Supertest**, publicando el informe de resultados en formato JUnit XML.
+    \item \textbf{Stage 3: Policies}: Aplica controles de seguridad de dependencias (\texttt{npm audit}) y valida los requisitos de gobernanza de la rama (\textit{Branch Policies}), bloqueando la integración si no existen aprobaciones de Pull Request.
+    \item \textbf{Stage 4: Staging}: Despliega una nueva revisión en un slot de staging dentro de **Azure Container Apps** para pruebas funcionales y de aceptación de usuario (UAT).
+    \item \textbf{Stage 5: Producción con Health Check}: Conmuta el 100\% del tráfico hacia la nueva revisión (\textit{Blue/Green swap}) y ejecuta de forma inmediata una sonda HTTP (\textit{Availability Probe}) contra el endpoint \texttt{/health}. Si el servicio no responde con código 200 y estado \texttt{HEALTHY}, el pipeline aborta y revierte el tráfico de forma automática.
+\end{enumerate}
+
+\begin{azureterminal}[Ejecucion de Pruebas Unitarias Automatizadas (Stage 2: Test)]
+$ npx jest tests/server.test.js --verbose
+PASS tests/server.test.js
+  Hero Agency Voting Platform - Automated Test Suite
+    + GET /health debe retornar estado HEALTHY y codigo 200 (Health Check) (15 ms)
+    + GET /api/heroes debe listar los superheroes candidatos con total de votos (2 ms)
+    + POST /api/vote debe incrementar votos para un heroe valido (6 ms)
+    + POST /api/vote debe fallar con 400 si falta el heroId (2 ms)
+    + POST /api/vote debe fallar con 404 si el heroId no existe (1 ms)
+    + GET / debe responder con la interfaz HTML y codigo 200 (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        0.281 s
+Ran all test suites matching /tests\/server.test.js/i.
+\end{azureterminal}
+
+\subsection{7.3 Publicación y Registro de Imagen en Azure Container Registry}
+La imagen construida fue firmada y publicada en el registro privado \texttt{acrrendobc01.azurecr.io}, quedando disponible para el despliegue automático en entornos productivos:
+
+\begin{azureterminal}[docker build, az acr login \& docker push a ACR Privado]
+$ docker build -t acrrendobc01.azurecr.io/hero-agency-voting:v1 .
+$ az acr login --name acrrendobc01
+$ docker push acrrendobc01.azurecr.io/hero-agency-voting:v1
+
+$ az acr repository show --name acrrendobc01 --image hero-agency-voting:v1 -o json
+{
+  "changeableAttributes": {
+    "deleteEnabled": true,
+    "listEnabled": true,
+    "readEnabled": true,
+    "writeEnabled": true
+  },
+  "createdTime": "2026-10-19T01:57:12.848953Z",
+  "digest": "sha256:a4f7c6bccafee2cfb4afd9603a6446964355cd6ea8388309313d17f75555f314",
+  "name": "v1"
+}
+\end{azureterminal}

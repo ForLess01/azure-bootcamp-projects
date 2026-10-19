@@ -1,0 +1,118 @@
+\section{Parte 1: Configuración Inicial, FinOps y Azure SQL Database}
+
+\subsection{1.1 Aprovisionamiento de Suscripción y Estructuración de Recursos}
+El aprovisionamiento empresarial en Microsoft Azure exige una jerarquía clara de gobernanza y contención. Se estableció el Grupo de Recursos \texttt{rg-bootcamp-part01-costsql} como unidad lógica de ciclo de vida, aplicando una taxonomía estricta de metadatos (\textit{tags}) que permite el seguimiento de costos, la asignación de propiedad a \textbf{Rendo Alfonte Tarqui} y el cumplimiento de políticas corporativas.
+
+\begin{azureterminal}[az group create --name rg-bootcamp-part01-costsql]
+$ az group create \
+    --name "rg-bootcamp-part01-costsql" \
+    --location "eastus" \
+    --tags Project=AzureBootcamp Owner=Rendo Part=01 Environment=Production
+
+{
+  "id": "/subscriptions/03b04657-b7ac-4a69-a451-53641d1e2002/resourceGroups/rg-bootcamp-part01-costsql",
+  "location": "eastus",
+  "name": "rg-bootcamp-part01-costsql",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": {
+    "Environment": "Production",
+    "Owner": "Rendo",
+    "Part": "01",
+    "Project": "AzureBootcamp"
+  },
+  "type": "Microsoft.Resources/resourceGroups"
+}
+\end{azureterminal}
+
+\subsection{1.2 Gobernanza de Costos y Alertas Presupuestarias (FinOps)}
+Para salvaguardar el presupuesto de la suscripción y evitar desviaciones de gasto imprevistas, se configuró un presupuesto mensual con Azure Cost Management (\texttt{Microsoft.Consumption/budgets}) delimitado al Grupo de Recursos. La regla audita el gasto acumulado y dispara una alerta por correo a \texttt{rendoaltar@hotmail.com} al sobrepasar el 80\% del umbral establecido (\$25.00 USD).
+
+\begin{azureterminal}[az consumption budget create-with-rg --budget-name budget-rg-part01]
+$ az consumption budget create-with-rg \
+    --budget-name "budget-rg-part01" \
+    --resource-group "rg-bootcamp-part01-costsql" \
+    --amount 25 \
+    --category Cost \
+    --time-grain Monthly \
+    --time-period start-date=2026-10-01 end-date=2027-10-01 \
+    --notifications @budget-notifications.json
+
+{
+  "amount": 25.0,
+  "category": "Cost",
+  "id": ".../resourceGroups/rg-bootcamp-part01-costsql/providers/Microsoft.Consumption/budgets/budget-rg-part01",
+  "name": "budget-rg-part01",
+  "notifications": {
+    "notification1": {
+      "contactEmails": ["rendoaltar@hotmail.com"],
+      "enabled": true,
+      "operator": "GreaterThan",
+      "threshold": 80.0
+    }
+  },
+  "timeGrain": "Monthly",
+  "type": "Microsoft.Consumption/budgets"
+}
+\end{azureterminal}
+
+\subsection{1.3 Despliegue de Azure SQL Database con Seguridad Zero Trust}
+Siguiendo las directrices de seguridad de alta criticidad, el servidor lógico de base de datos fue aprovisionado eliminando la autenticación tradicional basada en usuario y contraseña SQL (\texttt{--enable-ad-only-auth}). La administración recae exclusivamente en la identidad federada de Microsoft Entra ID de \textbf{Rendo Alfonte Tarqui}, mitigando vectores de ataque por fuerza bruta o credenciales estáticas expuestas.
+
+\begin{archnote}[Decisión de Arquitectura: Azure AD-Only Authentication]
+La desactivación de contraseñas locales en Azure SQL Server garantiza trazabilidad absoluta en Microsoft Entra Audit Logs y cumplimiento de los estándares NIST SP 800-63B y CIS Azure Benchmark v2.0.
+\end{archnote}
+
+\begin{azureterminal}[az sql server create --enable-ad-only-auth]
+$ az sql server create \
+    --name "sql-rendo-p01-30337" \
+    --resource-group "rg-bootcamp-part01-costsql" \
+    --location "westus" \
+    --enable-ad-only-auth \
+    --external-admin-principal-type User \
+    --external-admin-name "rendoaltar@hotmail.com" \
+    --external-admin-sid "2f5b5374-ac22-4235-b412-e6e36ede2647"
+
+{
+  "administratorLogin": "CloudSA5fd5ff88",
+  "administrators": {
+    "administratorType": "ActiveDirectory",
+    "azureAdOnlyAuthentication": true,
+    "login": "rendoaltar@hotmail.com",
+    "principalType": "User",
+    "sid": "2f5b5374-ac22-4235-b412-e6e36ede2647"
+  },
+  "fullyQualifiedDomainName": "sql-rendo-p01-30337.database.windows.net",
+  "location": "westus",
+  "publicNetworkAccess": "Enabled",
+  "state": "Ready"
+}
+\end{azureterminal}
+
+Se procedió con la configuración del cortafuegos (\textit{Firewall Rule}) para permitir la comunicación segura de servicios internos de Azure (como Azure Data Factory y Logic Apps) y la creación de la base de datos relacional con el esquema empresarial \textbf{AdventureWorksLT} bajo el nivel \texttt{Basic} (5 DTUs), garantizando alta disponibilidad con un costo inferior a \$5 USD/mes.
+
+\begin{azureterminal}[az sql db create --name sqldb-adventureworks --sample-name AdventureWorksLT]
+$ az sql server firewall-rule create \
+    --resource-group "rg-bootcamp-part01-costsql" \
+    --server "sql-rendo-p01-30337" \
+    --name "AllowAllWindowsAzureIps" \
+    --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0"
+
+$ az sql db create \
+    --resource-group "rg-bootcamp-part01-costsql" \
+    --server "sql-rendo-p01-30337" \
+    --name "sqldb-adventureworks" \
+    --edition Basic \
+    --capacity 5 \
+    --sample-name AdventureWorksLT
+
+{
+  "capacity": 5,
+  "edition": "Basic",
+  "id": ".../servers/sql-rendo-p01-30337/databases/sqldb-adventureworks",
+  "location": "westus",
+  "name": "sqldb-adventureworks",
+  "status": "Online"
+}
+\end{azureterminal}

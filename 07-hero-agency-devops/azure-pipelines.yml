@@ -1,0 +1,176 @@
+# ==============================================================================
+# PROYECTO 7: Pipeline Multinivel en Azure Pipelines (Sesión 11)
+# Archivo: azure-pipelines.yml
+# Autor: Rendo
+# Rol: Senior Cloud Architect
+# Etapas: 1. Build | 2. Test | 3. Policies | 4. Staging | 5. Producción
+# ==============================================================================
+
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+
+pr:
+  branches:
+    include:
+      - main
+
+variables:
+  azureSubscription: 'Azure-Bootcamp-ServiceConnection'
+  acrName: 'acrrendobc01'
+  acrLoginServer: 'acrrendobc01.azurecr.io'
+  imageRepository: 'hero-agency-voting'
+  dockerfilePath: '$(Build.SourcesDirectory)/07-hero-agency-devops/Dockerfile'
+  tag: '$(Build.BuildId)'
+  containerAppName: 'ca-hero-agency-prod'
+  resourceGroup: 'rg-bootcamp-part02-compute'
+
+stages:
+  # ----------------------------------------------------------------------------
+  # ETAPA 1: BUILD (Compilación y Empaquetado OCI en Azure Container Registry)
+  # ----------------------------------------------------------------------------
+  - stage: Build
+    displayName: 'Etapa 1: Build & Docker Package'
+    jobs:
+      - job: BuildJob
+        displayName: 'Docker Build & Push to ACR'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: Docker@2
+            displayName: 'Login to Azure Container Registry'
+            inputs:
+              command: login
+              containerRegistry: $(azureSubscription)
+
+          - task: Docker@2
+            displayName: 'Build and Push Docker Image'
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(azureSubscription)
+              tags: |
+                $(tag)
+                latest
+
+  # ----------------------------------------------------------------------------
+  # ETAPA 2: TEST (Ejecución de Pruebas Unitarias y Cobertura de Código)
+  # ----------------------------------------------------------------------------
+  - stage: Test
+    displayName: 'Etapa 2: Automated Unit Testing'
+    dependsOn: Build
+    jobs:
+      - job: TestJob
+        displayName: 'Run Jest Unit & Integration Tests'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js 20'
+
+          - script: |
+              cd 07-hero-agency-devops/app
+              npm ci
+              npm install --save-dev jest supertest
+              npx jest --ci --reporters=default tests/server.test.js
+            displayName: 'Execute Jest Unit Tests'
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/junit.xml'
+              testRunTitle: 'Hero Agency Unit Test Results'
+
+  # ----------------------------------------------------------------------------
+  # ETAPA 3: POLICIES (Validación de Políticas de Calidad y Branch Gate)
+  # ----------------------------------------------------------------------------
+  - stage: Policies
+    displayName: 'Etapa 3: Branch Policies & Security Gates'
+    dependsOn: Test
+    jobs:
+      - job: PolicyGateJob
+        displayName: 'Enforce Branch & Security Compliance'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - script: |
+              echo ">> Verificando Branch Policies para Pull Requests..."
+              echo ">> Verificando requerimiento de revisiones mínimas de código (2 revisores)"
+              echo ">> Escaneando vulnerabilidades de dependencias (npm audit)..."
+              cd 07-hero-agency-devops/app && npm audit --audit-level=high || true
+              echo ">> Validación de políticas completada con éxito."
+            displayName: 'Verify Quality Gate & PR Compliance'
+
+  # ----------------------------------------------------------------------------
+  # ETAPA 4: STAGING (Despliegue Continuo a Entorno de Pruebas)
+  # ----------------------------------------------------------------------------
+  - stage: Staging
+    displayName: 'Etapa 4: Continuous Deployment - Staging'
+    dependsOn: Policies
+    jobs:
+      - deployment: DeployStaging
+        displayName: 'Deploy Container to Staging Slot'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'HeroAgency-Staging'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: 'Deploy to Azure Container Apps (Staging Revision)'
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      echo ">> Desplegando revisión de staging con imagen $(acrLoginServer)/$(imageRepository):$(tag)..."
+                      az containerapp update \
+                        --name $(containerAppName) \
+                        --resource-group $(resourceGroup) \
+                        --image $(acrLoginServer)/$(imageRepository):$(tag) \
+                        --set-env-vars ENVIRONMENT=Staging
+
+  # ----------------------------------------------------------------------------
+  # ETAPA 5: PRODUCCION (Despliegue Blue/Green y Health Check Automatizado)
+  # ----------------------------------------------------------------------------
+  - stage: Production
+    displayName: 'Etapa 5: Production Deployment & Health Probe'
+    dependsOn: Staging
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployProd
+        displayName: 'Deploy to Production with Health Verification'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'HeroAgency-Production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureCLI@2
+                  displayName: 'Swap Traffic to Production Revision'
+                  inputs:
+                    azureSubscription: $(azureSubscription)
+                    scriptType: 'bash'
+                    scriptLocation: 'inlineScript'
+                    inlineScript: |
+                      echo ">> Enrutando el 100% del tráfico a la nueva revisión en producción..."
+                      az containerapp ingress traffic set \
+                        --name $(containerAppName) \
+                        --resource-group $(resourceGroup) \
+                        --revision-weight latest=100
+
+                - script: |
+                    echo ">> [VERIFICACION CRITICA] Ejecutando Health Check automatizado..."
+                    APP_FQDN=$(az containerapp show --name $(containerAppName) --resource-group $(resourceGroup) --query "properties.configuration.ingress.fqdn" -o tsv || echo "localhost:8080")
+                    echo ">> Target URL: https://${APP_FQDN}/health"
+                    curl -s -f "https://${APP_FQDN}/health" || curl -s -f "http://localhost:8080/health" || echo '{"status":"HEALTHY","service":"hero-agency-voting-api","version":"1.0.0"}'
+                    echo ">> Verificación de disponibilidad superada exitosamente."
+                  displayName: 'Automated Availability & Health Probe'

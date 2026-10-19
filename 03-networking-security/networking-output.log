@@ -1,0 +1,29 @@
+>> [1/4] Creando Grupo de Recursos para Redes: rg-bootcamp-part03-networking...
+Location    Name
+----------  -----------------------------
+eastus      rg-bootcamp-part03-networking
+>> [2/4] Creando Red Virtual 'VNet-01' con segmentación de subredes...
+
+AddressPrefix    Name            PrivateEndpointNetworkPolicies    PrivateLinkServiceNetworkPolicies    ProvisioningState    ResourceGroup
+---------------  --------------  --------------------------------  -----------------------------------  -------------------  -----------------------------
+10.0.2.0/24      Subnet-Backend  Disabled                          Enabled                              Succeeded            rg-bootcamp-part03-networking
+>> [3/4] Creando Network Security Group (NSG) y Reglas de Filtrado...
+
+Access    DestinationAddressPrefix    DestinationPortRange    Direction    Name        Priority    Protocol    ProvisioningState    ResourceGroup                  SourceAddressPrefix    SourcePortRange
+--------  --------------------------  ----------------------  -----------  ----------  ----------  ----------  -------------------  -----------------------------  ---------------------  -----------------
+Allow     *                           80                      Inbound      Allow-HTTP  100         Tcp         Succeeded            rg-bootcamp-part03-networking  *                      *
+Access    DestinationAddressPrefix    DestinationPortRange    Direction    Name         Priority    Protocol    ProvisioningState    ResourceGroup                  SourceAddressPrefix    SourcePortRange
+--------  --------------------------  ----------------------  -----------  -----------  ----------  ----------  -------------------  -----------------------------  ---------------------  -----------------
+Allow     *                           443                     Inbound      Allow-HTTPS  110         Tcp         Succeeded            rg-bootcamp-part03-networking  *                      *
+Access    DestinationAddressPrefix    DestinationPortRange    Direction    Name       Priority    Protocol    ProvisioningState    ResourceGroup                  SourceAddressPrefix    SourcePortRange
+--------  --------------------------  ----------------------  -----------  ---------  ----------  ----------  -------------------  -----------------------------  ---------------------  -----------------
+Allow     *                           22                      Inbound      Allow-SSH  120         Tcp         Succeeded            rg-bootcamp-part03-networking  *                      *
+Access    DestinationAddressPrefix    DestinationPortRange    Direction    Name       Priority    Protocol    ProvisioningState    ResourceGroup                  SourceAddressPrefix    SourcePortRange
+--------  --------------------------  ----------------------  -----------  ---------  ----------  ----------  -------------------  -----------------------------  ---------------------  -----------------
+Allow     *                           3389                    Inbound      Allow-RDP  130         Tcp         Succeeded            rg-bootcamp-part03-networking  *                      *
+>> [4/4] Aprovisionando Direcciones IP y Network Interfaces (NICs) asociadas...
+WARNING: [Coming breaking change] In the coming release, the default behavior will be changed as follows when sku is Standard and zone is not provided: For zonal regions, you will get a zone-redundant IP indicated by zones:["1","2","3"]; For non-zonal regions, you will get a non zone-redundant IP indicated by zones:null.
+
+
+
+>> ¡Parte 3 (Redes y Seguridad) completada exitosamente!

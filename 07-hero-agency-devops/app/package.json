@@ -1,0 +1,20 @@
+{
+  "name": "hero-agency-voting-app",
+  "version": "1.0.0",
+  "description": "Hero Agency Containerized Voting Web Application for Azure DevOps CI/CD Showcase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest --detectOpenHandles"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

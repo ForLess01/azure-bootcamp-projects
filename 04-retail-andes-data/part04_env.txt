@@ -1,0 +1,2 @@
+STORAGE_NAME=stretailandes64808
+ADF_NAME=adf-retail-andes-64808

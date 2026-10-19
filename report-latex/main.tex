@@ -1,0 +1,80 @@
+\documentclass[11pt,a4paper]{article}
+\input{preamble}
+
+\begin{document}
+
+% --- Portada / Header Principal ---
+\begin{center}
+  \vspace*{0.3cm}
+  {\Huge \textbf{\textcolor{azurenavy}{Arquitectura Integral Azure Cloud \& IA}}}\\[0.3cm]
+  {\Large \textcolor{azureblue}{\textbf{Evidencia de Despliegue Automatizado con Azure CLI y Multi-Agentes}}}\\[0.5cm]
+  
+  \begin{tabular}{rl}
+    \textbf{Autor:} & Rendo Alfonte Tarqui \\
+    \textbf{Suscripción:} & Azure for Students (\texttt{03b04657-b7ac-4a69-a451-53641d1e2002}) \\
+    \textbf{Directorio Entra ID:} & \texttt{rendoaltarhotmail.onmicrosoft.com} \\
+    \textbf{Cuenta Azure:} & \texttt{rendoaltar@hotmail.com} \\
+    \textbf{Crédito Disponible:} & \$100.00 USD (Optimizado con FinOps para Cero Sobrecosto) \\
+    \textbf{Fecha:} & Octubre 2026 \\
+    \textbf{Tipografía Oficial:} & Montserrat Regular, SemiBold \& Bold
+  \end{tabular}
+  \vspace{0.6cm}
+  \hrule height 1.2pt
+  \vspace{0.4cm}
+\end{center}
+
+\tableofcontents
+\newpage
+
+% --- Secciones del Proyecto (1 a 8) ---
+\input{part01_cost_sql}
+\newpage
+
+\input{part02_compute_containers}
+\newpage
+
+\input{part03_networking_security}
+\newpage
+
+\input{part04_retail_andes}
+\newpage
+
+\input{part05_identity_monitoring}
+\newpage
+
+\input{part06_iac_bicep}
+\newpage
+
+\input{part07_hero_agency_devops}
+\newpage
+
+\input{part08_agentic_ai_banco}
+
+\newpage
+\section{Resumen}
+\subsection{Matriz Consolidada de Recursos Desplegados}
+A lo largo de las 8 fases del proyecto, la totalidad de los servicios se aprovisionó respetando las restricciones de la suscripción académica (\textit{Azure for Students}) y el límite estricto de crédito de \$100 USD. Se aplicó una estrategia de niveles gratuitos (\textit{F1 Free}), cómputo sin servidor (\textit{Serverless}), capas básicas de base de datos relacional y retención optimizada.
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{|>{\raggedright\arraybackslash\bfseries\footnotesize}p{2.6cm}|>{\raggedright\arraybackslash\ttfamily\scriptsize}p{3.8cm}|>{\raggedright\arraybackslash\footnotesize}X|>{\raggedright\arraybackslash\footnotesize}p{2.8cm}|}
+\hline
+\rowcolor{azurenavy!15}
+\textbf{Proyecto / Sesión} & \textbf{Grupo de Recursos} & \textbf{Servicios Principales} & \textbf{Estrategia FinOps} \\ \hline
+Parte 1: Costos \& SQL & rg-bootcamp-\newline part01-costsql & Azure SQL Basic (5 DTU), Cost Budget & Alerta 80\% / \$25 tope \\ \hline
+Parte 2: Cómputo \& Apps & rg-bootcamp-\newline part02-compute & App Service F1 Linux, ACR Basic & Tier F1 Free (\$0.00) \\ \hline
+Parte 3: Redes \& Seguridad & rg-bootcamp-\newline part03-networking & VNet-01, Subnets, NSG, NICs, Public IP & Arquitectura desacoplada \\ \hline
+Parte 4: Retail Andes & rg-bootcamp-\newline part04-retail-andes & ADLS Gen2 Hierarchical, Data Factory & LRS Bronze Parquet \\ \hline
+Parte 5: Identidad \& KV & rg-bootcamp-\newline part05-identity & Entra ID Group, UAMI, Key Vault, Logic App & Passwordless \& Auditoría \\ \hline
+Parte 6: IaC Bicep & rg-bootcamp-\newline part06-iac & Log Analytics, App Insights, UAMI, Key Vault & OCI Artifact en ACR \\ \hline
+Parte 7: CI/CD Hero Agency & rg-bootcamp-\newline part02-compute & Docker Container, 5-Stage Azure Pipeline & Tests Jest automatizados \\ \hline
+Parte 8: IA Multi-Agente & Entorno Local \& FastAPI & LangGraph StateGraph, RAG, Flux Prompts & Inferencia optimizada \\ \hline
+\end{tabularx}
+\end{center}
+
+\vspace{0.5cm}
+\begin{archnote}[Resumen]
+La ejecución exitosa de los 8 proyectos demuestra la viabilidad de implementar arquitecturas de grado empresarial de extremo a extremo (desde la base de datos y la red hasta agentes de Inteligencia Artificial Generativa y tuberías CI/CD) bajo una gobernanza presupuestaria rigurosa, automatización declarativa con Azure CLI y Bicep, y cumplimiento normativo estricto.
+\end{archnote}
+
+\end{document}

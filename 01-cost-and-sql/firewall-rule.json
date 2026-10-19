@@ -1,0 +1,8 @@
+{
+  "endIpAddress": "0.0.0.0",
+  "id": "/subscriptions/03b04657-b7ac-4a69-a451-53641d1e2002/resourceGroups/rg-bootcamp-part01-costsql/providers/Microsoft.Sql/servers/sql-rendo-p01-30337/firewallRules/AllowAllWindowsAzureIps",
+  "name": "AllowAllWindowsAzureIps",
+  "resourceGroup": "rg-bootcamp-part01-costsql",
+  "startIpAddress": "0.0.0.0",
+  "type": "Microsoft.Sql/servers/firewallRules"
+}

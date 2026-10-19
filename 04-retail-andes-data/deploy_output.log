@@ -1,0 +1,30 @@
+>> [1/5] Creando Grupo de Recursos para Retail Andes: rg-bootcamp-part04-retail-andes...
+Location    Name
+----------  -------------------------------
+eastus      rg-bootcamp-part04-retail-andes
+>> [2/5] Creando Azure Data Lake Storage Gen2 (stretailandes64808)...
+AccessTier    AllowBlobPublicAccess    AllowCrossTenantReplication    CreationTime                      EnableHttpsTrafficOnly    IsHnsEnabled    Kind       Location    MinimumTlsVersion    Name                PrimaryLocation    ProvisioningState    ResourceGroup                    StatusOfPrimary
+------------  -----------------------  -----------------------------  --------------------------------  ------------------------  --------------  ---------  ----------  -------------------  ------------------  -----------------  -------------------  -------------------------------  -----------------
+Hot           False                    False                          2026-10-19T01:47:35.786131+00:00  True                      True            StorageV2  eastus      TLS1_0               stretailandes64808  eastus             Succeeded            rg-bootcamp-part04-retail-andes  available
+>> [3/5] Creando contenedor 'bronze' en ADLS Gen2...
+Created
+---------
+True
+>> [4/5] Aprovisionando Azure Data Factory (adf-retail-andes-64808)...
+WARNING: Preview version of extension is disabled by default for extension installation, enabled for modules without stable versions. 
+WARNING: Please run 'az config set extension.dynamic_install_allow_preview=true or false' to config it specifically. 
+The command requires the extension datafactory. Do you want to install it now? The command will continue to run after the extension is installed. (Y/n): WARNING: Run 'az config set extension.use_dynamic_install=yes_without_prompt' to allow installing extensions without prompt.
+CreateTime                        ETag                                    Location    Name                    ProvisioningState    ResourceGroup                    Version
+--------------------------------  --------------------------------------  ----------  ----------------------  -------------------  -------------------------------  ----------
+2026-10-19T01:48:33.707259+00:00  "6200c699-0000-0100-0000-6ad576f20000"  eastus      adf-retail-andes-64808  Succeeded            rg-bootcamp-part04-retail-andes  2018-06-01
+>> [5/5] Definiendo Linked Services y Pipeline de Ingesta hacia Capa Bronze...
+Name                 ResourceGroup
+-------------------  -------------------------------
+LS_ADLS_Gen2_Bronze  rg-bootcamp-part04-retail-andes
+Name               ResourceGroup
+-----------------  -------------------------------
+DS_Bronze_Parquet  rg-bootcamp-part04-retail-andes
+Name                            ResourceGroup
+------------------------------  -------------------------------
+PL_Ingesta_Retail_Andes_Bronze  rg-bootcamp-part04-retail-andes
+>> ¡Parte 4 (Retail Andes - Ingesta y Orquestación) completada exitosamente!

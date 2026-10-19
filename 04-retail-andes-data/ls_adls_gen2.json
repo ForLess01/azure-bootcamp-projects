@@ -1,0 +1,14 @@
+{
+  "type": "AzureBlobFS",
+  "typeProperties": {
+    "url": "https://stretailandes64808.dfs.core.windows.net",
+    "accountKey": {
+      "type": "AzureKeyVaultSecret",
+      "store": {
+        "referenceName": "LS_AzureKeyVault",
+        "type": "LinkedServiceReference"
+      },
+      "secretName": "AdlsGen2StorageKey"
+    }
+  }
+}

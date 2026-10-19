@@ -1,0 +1,92 @@
+\section{Parte 2: Cómputo, Aplicaciones Web y Contenedores}
+
+\subsection{2.1 Paradigma de Cómputo y Restricciones de Cuota en Suscripciones Estudiantiles}
+En entornos empresariales y académicos bajo Microsoft Azure, la selección de cómputo debe balancear capacidad, disponibilidad y presupuesto. Durante el análisis de aprovisionamiento de Máquinas Virtuales (\textit{IaaS}) en la suscripción \textit{Azure for Students}, se evidenció la restricción regional de cuota de vCPUs para instancias tradicionales (\texttt{SkuNotAvailable} / cuota 0 vCPU en familias B/D), un mecanismo de protección de crédito impuesto por Microsoft.
+
+\begin{archnote}[Decisión de Arquitectura: Pivote hacia Cómputo PaaS y Serverless]
+Como arquitecto sénior, frente a limitaciones de cuota IaaS en suscripciones con crédito limitado (\$100 USD), la mejor práctica de ingeniería consiste en priorizar arquitecturas \textbf{PaaS (App Service)} y \textbf{CaaS/Serverless (Azure Container Apps)}, garantizando alta densidad de cómputo con costo cero o por milisegundo de consumo.
+\end{archnote}
+
+\begin{azureterminal}[az vm create --size Standard\_B1s (Deteccion de Cuotas FinOps)]
+$ az vm create \
+    --resource-group "rg-bootcamp-part02-compute" \
+    --name "vm-bootcamp-linux" \
+    --location "eastus" \
+    --size "Standard_B1s" \
+    --admin-username "rendoadmin"
+
+ERROR: (SkuNotAvailable) The requested VM size for resource 'Standard_B1s' 
+is currently not available in location 'eastus' due to subscription quota.
+\end{azureterminal}
+
+\subsection{2.2 Aplicación Web en Azure App Service (.NET en Tier F1 Gratuito)}
+Para maximizar el rendimiento sin consumir la línea de crédito de \$100 USD de \textbf{Rendo Alfonte Tarqui}, se aprovisionó un plan de App Service en Linux bajo el nivel \textbf{F1 Free} (\$0.00 USD/mes), configurando una Web App ejecutando el runtime oficial de \textbf{.NET} con variables de entorno de producción.
+
+\begin{azureterminal}[az appservice plan create \& az webapp create (.NET)]
+$ az appservice plan create \
+    --name "asp-bootcamp-linux" \
+    --resource-group "rg-bootcamp-part02-compute" \
+    --location "eastus" \
+    --is-linux \
+    --sku F1
+
+$ az webapp create \
+    --name "app-rendo-dotnet-bc" \
+    --resource-group "rg-bootcamp-part02-compute" \
+    --plan "asp-bootcamp-linux" \
+    --runtime "DOTNETCORE:8.0"
+
+$ az webapp config appsettings set \
+    --name "app-rendo-dotnet-bc" \
+    --resource-group "rg-bootcamp-part02-compute" \
+    --settings ENVIRONMENT=Production ARCHITECT=Rendo
+
+{
+  "defaultHostName": "app-rendo-dotnet-bc.azurewebsites.net",
+  "id": ".../providers/Microsoft.Web/sites/app-rendo-dotnet-bc",
+  "kind": "app,linux",
+  "location": "eastus",
+  "state": "Running"
+}
+\end{azureterminal}
+
+\subsection{2.3 Contenedores: Docker, Azure Container Registry (ACR) y Container Apps}
+Para la modernización de servicios, se desarrolló una API REST bancaria en Python con \textbf{FastAPI}, empaquetada mediante Docker y publicada en un registro privado de **Azure Container Registry** (\texttt{acrrendobc01.azurecr.io}).
+
+\begin{azureterminal}[az acr create \& docker build/push a Azure Container Registry]
+$ az acr create \
+    --resource-group "rg-bootcamp-part02-compute" \
+    --name "acrrendobc01" \
+    --sku Basic \
+    --admin-enabled true
+
+$ docker build -t acrrendobc01.azurecr.io/banking-api:v1 api-fastapi/
+$ az acr login --name acrrendobc01
+$ docker push acrrendobc01.azurecr.io/banking-api:v1
+
+Login Succeeded
+The push refers to repository [acrrendobc01.azurecr.io/banking-api]
+v1: digest: sha256:1a121a0958aed689d989bc9e67a66d9ce2c83d1f36e3e7a396c029ee7081e511 size: 856
+\end{azureterminal}
+
+Posteriormente, se aprovisionó el entorno de **Azure Container Apps** con reglas de autoescalado elástico (HTTP Scaling) con un mínimo de 1 réplica y hasta 5 réplicas dinámicas ante picos de concurrencia:
+
+\begin{azureterminal}[az containerapp create --scale-rule-name http-scaling]
+$ az containerapp create \
+    --name "api-banking-service" \
+    --resource-group "rg-bootcamp-part02-compute" \
+    --environment "cae-bootcamp-rendo" \
+    --image "acrrendobc01.azurecr.io/banking-api:v1" \
+    --target-port 8000 \
+    --ingress external \
+    --min-replicas 1 \
+    --max-replicas 5 \
+    --scale-rule-name "http-scaling" \
+    --scale-rule-http-concurrency 50
+
+{
+  "fqdn": "api-banking-service.eastus.azurecontainerapps.io",
+  "provisioningState": "Succeeded",
+  "status": "Ready"
+}
+\end{azureterminal}

@@ -1,0 +1,10 @@
+{
+  "Notification1": {
+    "enabled": true,
+    "operator": "GreaterThan",
+    "threshold": 80,
+    "contactEmails": [
+      "renforalltasks@hotmail.com"
+    ]
+  }
+}

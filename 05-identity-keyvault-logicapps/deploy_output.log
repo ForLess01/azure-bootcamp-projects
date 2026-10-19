@@ -1,0 +1,29 @@
+>> [1/5] Creando Grupo de Recursos para Identidades y Seguridad: rg-bootcamp-part05-identity...
+Location    Name
+----------  ---------------------------
+eastus      rg-bootcamp-part05-identity
+>> [2/5] Gestionando Microsoft Entra ID: Creando Grupo 'GRP_bootcamp_LEAD_UTP' y RBAC...
+Grupo creado con ID: c1283ad6-c481-4651-ae46-1c163b1e814c
+ERROR: (PrincipalNotFound) Principal c1283ad6c4814651ae461c163b1e814c does not exist in the directory bc8828a8-8625-47f4-878f-43e7ee540245. Check that you have the correct principal ID. If you are creating this principal and then immediately assigning a role, this error might be related to a replication delay. In this case, set the role assignment principalType property to a value, such as ServicePrincipal, User, or Group.  See https://aka.ms/docs-principaltype
+Code: PrincipalNotFound
+Message: Principal c1283ad6c4814651ae461c163b1e814c does not exist in the directory bc8828a8-8625-47f4-878f-43e7ee540245. Check that you have the correct principal ID. If you are creating this principal and then immediately assigning a role, this error might be related to a replication delay. In this case, set the role assignment principalType property to a value, such as ServicePrincipal, User, or Group.  See https://aka.ms/docs-principaltype
+>> [3/5] Configurando Acceso Sin Contraseñas (User-Assigned Managed Identity)...
+UAMI Principal ID: 9f5fca83-957c-4aec-ab99-2b6b59ed1837
+CreatedOn                         Name                                  PrincipalId                           PrincipalType     ResourceGroup                    RoleDefinitionId                                                                                                                            Scope                                                                                                                                                              UpdatedBy                             UpdatedOn
+--------------------------------  ------------------------------------  ------------------------------------  ----------------  -------------------------------  ------------------------------------------------------------------------------------------------------------------------------------------  -----------------------------------------------------------------------------------------------------------------------------------------------------------------  ------------------------------------  --------------------------------
+2026-10-19T01:49:37.818322+00:00  adcc80ab-b6a5-4508-9c58-eaf287196d42  9f5fca83-957c-4aec-ab99-2b6b59ed1837  ServicePrincipal  rg-bootcamp-part04-retail-andes  /subscriptions/03b04657-b7ac-4a69-a451-53641d1e2002/providers/Microsoft.Authorization/roleDefinitions/2a2b9908-6ea1-4ae2-8e65-a410df84e7d1  /subscriptions/03b04657-b7ac-4a69-a451-53641d1e2002/resourceGroups/rg-bootcamp-part04-retail-andes/providers/Microsoft.Storage/storageAccounts/stretailandes64808  2f5b5374-ac22-4235-b412-e6e36ede2647  2026-10-19T01:49:38.356327+00:00
+>> [4/5] Aprovisionando Azure Key Vault (kv-rendo-7935) y Almacenando Secretos...
+Location    Name           ResourceGroup
+----------  -------------  ---------------------------
+eastus      kv-rendo-7935  rg-bootcamp-part05-identity
+Location    Name           ResourceGroup
+----------  -------------  ---------------------------
+eastus      kv-rendo-7935  rg-bootcamp-part05-identity
+Name                Value
+------------------  -------------------------------------------------------------------------------------------------------------------
+DbConnectionString  Server=sql-rendo-p01-30337.database.windows.net;Database=sqldb-adventureworks;Authentication=ActiveDirectoryDefault
+>> [5/5] Creando Flujo de Monitoreo en Azure Logic Apps para Alertas de Expiración...
+WARNING: Preview version of extension is disabled by default for extension installation, enabled for modules without stable versions. 
+WARNING: Please run 'az config set extension.dynamic_install_allow_preview=true or false' to config it specifically. 
+WARNING: The command requires the extension logic. It will be installed first.
+ERROR: --definition does not contain a 'definition' key

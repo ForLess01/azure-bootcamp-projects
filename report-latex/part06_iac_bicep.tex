@@ -1,0 +1,64 @@
+\section{Parte 6: Infraestructura como Código (IaC) con Bicep}
+
+\subsection{6.1 Arquitectura Modular y Despliegue Declarativo}
+La adopción de Infraestructura como Código (\textbf{IaC}) permite garantizar la reproducibilidad, consistencia y trazabilidad de los entornos de nube, eliminando la desviación de configuración (\textit{drift}) y los errores humanos inherentes a aprovisionamientos manuales. Para este proyecto, se diseñó una arquitectura modular mediante **Azure Bicep**, estructurada bajo una jerarquía desacoplada de responsabilidades:
+
+\begin{itemize}
+    \item \textbf{\texttt{modules/monitoring.bicep}}: Aprovisiona de forma coordinada un espacio de trabajo centralizado de \textbf{Log Analytics Workspace} (\texttt{log-rendo-bootcamp}) y un recurso de observabilidad y telemetría APM \textbf{Application Insights} (\texttt{appi-rendo-bootcamp}) vinculado nativamente.
+    \item \textbf{\texttt{modules/identity.bicep}}: Crea la Identidad Administrada Asignada por el Usuario (\textbf{UAMI}) denominada \texttt{uami-rendo-iac}, proporcionando un principal seguro para la ejecución de cargas de trabajo.
+    \item \textbf{\texttt{modules/keyvault.bicep}}: Despliega el baúl de claves y secretos \textbf{Azure Key Vault} (\texttt{kv-rendo-265x72}) con autorización RBAC habilitada y retención de eliminación suave (\textit{Soft Delete}) de 7 días.
+    \item \textbf{\texttt{main.bicep} \& \texttt{main.bicepparam}}: Archivo orquestador raíz que enlaza los módulos, gestiona dependencias internas y calcula sufijos pseudoaleatorios unívocos mediante la función determinística \texttt{uniqueString(resourceGroup().id)}.
+\end{itemize}
+
+\begin{azureterminal}[Compilacion, Validacion Preflight y Despliegue ARM con Bicep]
+$ az bicep build --file main.bicep
+
+$ az deployment group validate \
+    --resource-group "rg-bootcamp-part06-iac" \
+    --template-file main.bicep \
+    --parameters main.bicepparam -o table
+Result     CorrelationId
+---------  ------------------------------------
+Succeeded  89f80c58-dda7-4ced-ad5b-276f9810b0ac
+
+$ az deployment group create \
+    --resource-group "rg-bootcamp-part06-iac" \
+    --template-file main.bicep \
+    --parameters main.bicepparam -o table
+Name    State      Timestamp                         Mode         ResourceGroup
+------  ---------  --------------------------------  -----------  ----------------------
+main    Succeeded  2026-10-19T01:54:17.486899+00:00  Incremental  rg-bootcamp-part06-iac
+\end{azureterminal}
+
+\subsection{6.2 Publicación de Módulos Bicep en Azure Container Registry Privado (OCI)}
+Siguiendo las mejores prácticas corporativas de reusabilidad y gobernanza de código, los módulos de infraestructura no deben duplicarse manualmente entre repositorios. En su lugar, se publican como artefactos conformes al estándar **Open Container Initiative (OCI)** dentro de un registro privado de Azure Container Registry (\textbf{ACR}).
+
+\begin{archnote}[Reutilización de Infraestructura vía OCI Registry]
+Al almacenar módulos en formato \texttt{br:acrrendobc01.azurecr.io/bicep/modules/monitoring:v1}, los equipos de ingeniería pueden consumir plantillas versionadas e inmutables directamente en sus pipelines CI/CD, garantizando que todos los servicios cumplan con las directivas de seguridad corporativas aprobadas.
+\end{archnote}
+
+\begin{azureterminal}[az bicep publish a Azure Container Registry \& Verificacion OCI]
+$ az bicep publish \
+    --file modules/monitoring.bicep \
+    --target "br:acrrendobc01.azurecr.io/bicep/modules/monitoring:v1"
+
+$ az acr repository list --name acrrendobc01 -o table
+Result
+------------------------
+banking-api
+bicep/modules/monitoring
+hero-agency-voting
+\end{azureterminal}
+
+\subsection{6.3 Verificación de Recursos Creados mediante Bicep}
+La ejecución automatizada del template generó los 4 recursos integrados dentro del grupo \texttt{rg-bootcamp-part06-iac}, demostrando la potencia de las dependencias implícitas resueltas por el motor de Azure Resource Manager (\textbf{ARM}):
+
+\begin{azureterminal}[az resource list en rg-bootcamp-part06-iac]
+$ az resource list -g rg-bootcamp-part06-iac -o table
+Name                 ResourceGroup           Location    Type
+-------------------  ----------------------  ----------  ------------------------------------------------
+uami-rendo-iac       rg-bootcamp-part06-iac  eastus      Microsoft.ManagedIdentity/userAssignedIdentities
+log-rendo-bootcamp   rg-bootcamp-part06-iac  eastus      Microsoft.OperationalInsights/workspaces
+kv-rendo-265x72      rg-bootcamp-part06-iac  eastus      Microsoft.KeyVault/vaults
+appi-rendo-bootcamp  rg-bootcamp-part06-iac  eastus      Microsoft.Insights/components
+\end{azureterminal}

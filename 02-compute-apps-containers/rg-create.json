@@ -1,0 +1,15 @@
+{
+  "id": "/subscriptions/03b04657-b7ac-4a69-a451-53641d1e2002/resourceGroups/rg-bootcamp-part02-compute",
+  "location": "westus",
+  "managedBy": null,
+  "name": "rg-bootcamp-part02-compute",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": {
+    "Owner": "Rendo",
+    "Part": "02",
+    "Project": "AzureBootcamp"
+  },
+  "type": "Microsoft.Resources/resourceGroups"
+}

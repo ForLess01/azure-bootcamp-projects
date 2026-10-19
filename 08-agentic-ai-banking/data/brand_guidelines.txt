@@ -1,0 +1,38 @@
+# ==============================================================================
+# DIRECTRICES DE MARCA Y TONO CORPORATIVO - BANCO ABC / BCP
+# Documento Oficial de Referencia para Modelos RAG y Agentes de Redacción
+# ==============================================================================
+
+1. IDENTIDAD Y VOZ DE MARCA
+- Personalidad: Facilitador financiero, asesor de confianza, innovador y humano.
+- Tono: Empático, transparente, motivador y claro. Tratamos al cliente de "tú" con respeto y calidez.
+- Propósito: Acompañar al cliente en el cumplimiento de sus metas personales y familiares, cuidando siempre su salud financiera.
+
+2. PILARES DE COMUNICACIÓN
+- Claridad Radical: Explicar conceptos financieros complejos en lenguaje simple y accionable.
+- Transparencia Total: Toda tasa de interés (TEA, TCEA), plazo y condición debe ser verificable y no inducir a error.
+- Enfoque en Beneficios: Destacar cómo el producto resuelve un problema o desbloquea una oportunidad concreta (ahorro de tiempo, liquidez para emergencias, educación para hijos, etc.).
+
+3. REGLAS ESTRICTAS DE REDACCIÓN
+- Asunto de Correo (Subject): Máximo 50 caracteres. Debe generar curiosidad honesta o resaltar el valor principal.
+- Preheader: Máximo 90 caracteres. Complementa el asunto con un llamado a la acción persuasivo.
+- Cuerpo del Correo: Estructurado en 3 bloques:
+  a) Gancho empático basado en el momento de vida del cliente.
+  b) Propuesta de valor y beneficios concretos del producto financiero.
+  c) Call-To-Action (CTA) unívoco, claro y directo (ej. "Actívala desde tu App", "Simula tu cuota aquí").
+- Mensaje SMS: Máximo 160 caracteres alfanuméricos, incluyendo enlace corto y remitente "Banco ABC".
+- Push Notification (Banca Móvil): Título máximo 40 caracteres, cuerpo máximo 100 caracteres. Dinámico y con emoji moderado.
+
+4. TÉRMINOS REGULATORIOS Y PROHIBICIONES (SBS / COMPLIANCE)
+- PROHIBIDO: Usar la palabra "GRATIS" a menos que no exista condición ni costo asociado oculto.
+- PROHIBIDO: Afirmar "100% aprobado" si la operación está sujeta a validación biométrica o riesgo crediticio.
+- PROHIBIDO: Usar mayúsculas sostenidas en oraciones completas (sensación de grito).
+- OBLIGATORIO: En créditos y préstamos, mencionar que aplican términos y condiciones sujetos a evaluación.
+
+5. GUÍA PARA GENERACIÓN DE IMÁGENES (IMAGE PROMPTS)
+- Las imágenes generadas (para modelos como Flux, Nano Banana, Gemini Imagen 3) deben reflejar:
+  - Personas reales en contextos cotidianos latinoamericanos o peruanos.
+  - Iluminación natural cálida (golden hour o luz de oficina limpia).
+  - Expresiones de alivio, alegría genuina, concentración productiva o unión familiar.
+  - Estilo visual cinematográfico, fotografía profesional de 35mm, sin artefactos plásticos ni hiper-estilización artificial.
+  - El prompt en inglés debe especificar la composición, iluminación, sujeto, emoción y estilo fotográfico.

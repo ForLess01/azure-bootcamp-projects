@@ -1,0 +1,3 @@
+WARNING: The behavior of this command has been altered by the following extension: containerapp
+WARNING: Adding registry password as a secret with name "acrrendobc01azurecrio-acrrendobc01"
+ERROR: (ManagedEnvironmentNotProvisioned) The environment '/subscriptions/03b04657-b7ac-4a69-a451-53641d1e2002/resourceGroups/rg-bootcamp-part02-compute/providers/Microsoft.App/managedEnvironments/cae-bootcamp-rendo' has not been provisioned successfully.

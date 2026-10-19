@@ -1,0 +1,4 @@
+WARNING: The behavior of this command has been altered by the following extension: containerapp
+WARNING: No Log Analytics workspace provided.
+WARNING: Generating a Log Analytics workspace with name "workspace-rgbootcamppart02computesmuw"
+ERROR: (InvalidResourceLocation) The resource 'cae-bootcamp-rendo' already exists in location 'eastus' in resource group 'rg-bootcamp-part02-compute'. A resource with the same name cannot be created in location 'westus'. Please select a new resource name.

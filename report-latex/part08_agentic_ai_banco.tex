@@ -1,0 +1,78 @@
+\section{Parte 8: Proyecto Real de IA: Sistema Agéntico de Campañas para Banco (BCP / Banco ABC)}
+
+\subsection{8.1 Arquitectura Multi-Agente y Orquestación de Flujos de Negocio}
+La última sesión del bootcamp aborda la frontera de la Inteligencia Artificial Generativa aplicada al sector bancario: la transición desde modelos conversacionales monolíticos hacia **Sistemas Agénticos Autónomos (Multi-Agent Systems)**. Se implementó una solución de marketing hiperpersonalizado para la banca minorista (\textbf{BCP / Banco ABC}), orquestada bajo un grafo de estado (\textbf{StateGraph}) que desacopla la inferencia en roles especializados:
+
+\begin{itemize}
+    \item \textbf{Agente de Afinidad Comercial (\textit{Commercial Matching Agent})}: Analiza la información demográfica y financiera del cliente (DNI, nivel de ingresos, ratio de gastos, estado civil, número de dependientes) y sus hábitos de consumo categorizados. Cruza estos datos con el catálogo corporativo de productos bancarios, calculando un score analítico de afinidad ($0 - 100$) y seleccionando las 3 campañas de mayor relevancia.
+    \item \textbf{Motor RAG con Directrices de Marca (\textit{Brand RAG Engine})}: Recupera en tiempo de ejecución las directrices del manual de marca y las restricciones regulatorias de la Superintendencia de Banca y Seguros (\textbf{SBS}), inyectando al contexto del modelo el tono empático, la prohibición de términos engañosos (ej. "100\% aprobado" o "gratis") y los disclaimers mandatorios.
+    \item \textbf{Agente Redactor y Creativo (\textit{Creative Copy Agent})}: Genera de forma adaptativa el contenido de marketing multicanal:
+    \begin{enumerate}
+        \item \textbf{Correo Electrónico}: Asunto (máximo 50 caracteres), preheader (máximo 90 caracteres) y cuerpo redactado en 3 bloques estratégicos (gancho empático, propuesta de valor con viñetas y llamada a la acción).
+        \item \textbf{Mensaje SMS}: Texto persuasivo condensado en menos de 160 caracteres con enlace corto y remitente institucional.
+        \item \textbf{Notificación Push}: Alerta de alta conversión para la aplicación de Banca Móvil (título de 40 caracteres y cuerpo de 100 caracteres).
+        \item \textbf{Prompter para Modelos de Visión}: Genera prompts descriptivos en inglés para modelos de difusión de última generación (\textbf{Flux.1}, \textbf{Nano Banana}, \textbf{Gemini Imagen 3}), describiendo iluminación natural cálida, sujetos latinoamericanos auténticos, composiciones cinematográficas en lente de 35mm y expresiones de tranquilidad financiera.
+    \end{enumerate}
+    \item \textbf{Auditor de Cumplimiento Normativo (\textit{Compliance Guard})}: Nodo de control de calidad que audita los textos generados antes de su persistencia o envío, verificando el cumplimiento estricto de las normas de protección al consumidor financiero.
+\end{itemize}
+
+\subsection{8.2 Exposición mediante API REST en FastAPI}
+El sistema se encapsuló en un microservicio de alto rendimiento con **FastAPI**, exponiendo endpoints REST documentados bajo el estándar OpenAPI / Swagger:
+
+\begin{azureterminal}[Endpoints REST del Microservicio de Campanas Bancarias]
+GET  /health                   -> Estado del servicio y agentes activos
+GET  /api/v1/customers         -> Listado de perfiles demograficos de prueba
+GET  /api/v1/catalog           -> Catalogo de campanas financieras vigentes
+POST /api/v1/campaigns/generate -> Ejecucion del grafo multi-agente completo
+\end{azureterminal}
+
+\subsection{8.3 Ejecución End-to-End y Resultados con Perfiles Demográficos Reales}
+A continuación se documenta la ejecución del flujo multi-agente procesando tres perfiles diferenciados de clientes bancarios:
+
+\begin{azureterminal}[Ejecucion del Flujo Agentico - Cliente 1: Mateo Quispe (Lifestyle / Single)]
+[CLIENTE 1/3]: Mateo Quispe (DNI: 45892147)
+  - Segmento: Exclusive / Lifestyle | Ingreso: S/ 6,800.00
+  - Estado Civil: Soltero | Hijos: 0
+  - Habitos: Viajes, Restaurantes, Moda, Streaming, Hoteles
+
+  >> [AGENTE 1: MATCHING COMERCIAL] Top 3 Campanas Seleccionadas:
+     1. Tarjeta Visa Signature Viajes & Lifestyle (Score Afinidad: 89.53/100)
+     2. Adelanto de Sueldo Digital (Score Afinidad: 60.0/100)
+     3. Deposito a Plazo Fijo Premium 7.5% TREA (Score Afinidad: 49.08/100)
+
+  >> [AGENTE 2: REDACTOR CREATIVO & PROMPTER] Muestra de Piezas:
+     [EMAIL]
+       Asunto:    Mateo, tus viajes sonados te esperan hoy
+       Preheader: Descubre los beneficios exclusivos de tu nueva tarjeta Signature
+     [SMS]
+       Texto:     Banco ABC: Mateo, aprovecha hoy Tarjeta Visa Signature. Solicitala en 2 minutos desde tu App. Mas info: bcp.pe/oferta T&C aplican.
+     [PUSH]
+       Notif:     * Mateo, tu oferta exclusiva - Acumula 10,000 millas de bienvenida con tu Signature. Pidela aqui!
+     [GENERATIVE VISION PROMPT]
+       Modelo:    Flux.1 / Nano Banana / Gemini Imagen 3
+       Prompt EN: A stylish Latin American man around 29 years old relaxing at a modern international airport lounge, holding a premium passport case, warm golden hour ambient lighting, depth of field, candid smile of freedom, high-end lifestyle photography, 35mm lens, f/1.8, cinematic.
+
+  >> [COMPLIANCE SBS / AUDITOR]: Estado SUCCESS (Violaciones: 0)
+\end{azureterminal}
+
+\begin{azureterminal}[Ejecucion del Flujo Agentico - Cliente 3: Carlos Mendoza (Consolidacion / Hogar)]
+[CLIENTE 3/3]: Carlos Mendoza (DNI: 10348756)
+  - Segmento: Consolidacion / Hogar | Ingreso: S/ 5,500.00
+  - Estado Civil: Casado | Hijos: 1
+  - Habitos: Hogar, Decoracion, Servicios, Supermercado
+
+  >> [AGENTE 1: MATCHING COMERCIAL] Top 3 Campanas Seleccionadas:
+     1. Credito Hipotecario 'Tu Primer Hogar' (Score Afinidad: 89.71/100)
+     2. Adelanto de Sueldo Digital (Score Afinidad: 78.75/100)
+     3. Credito Educativo 'Futuro Brillante' (Score Afinidad: 53.25/100)
+
+  >> [AGENTE 2: REDACTOR CREATIVO & PROMPTER] Muestra de Piezas:
+     [EMAIL]
+       Asunto:    Carlos, el hogar de tu familia esta cerca
+       Preheader: Precalifica hoy mismo con tasa preferencial y cuotas a tu medida
+     [GENERATIVE VISION PROMPT]
+       Modelo:    Flux.1 / Nano Banana / Gemini Imagen 3
+       Prompt EN: A young Latin American couple in their early 30s with a cheerful child, entering an airy, bright newly purchased apartment, natural morning sunlight streaming through large windows, emotional expressions of joy and pride, interior design magazine aesthetic, Sony Alpha 7 IV style.
+
+  >> [COMPLIANCE SBS / AUDITOR]: Estado SUCCESS (Violaciones: 0)
+\end{azureterminal}

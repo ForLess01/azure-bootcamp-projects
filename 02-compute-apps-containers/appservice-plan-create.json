@@ -1,0 +1,37 @@
+/opt/homebrew/Cellar/azure-cli/2.89.1/libexec/lib/python3.14/site-packages/azure/mgmt/web/models/_models.py:19865: SyntaxWarning: "\S" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\S"? A raw string is also an option.
+  the time zones listed under HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
+WARNING: Creating App Service Plan 'asp-bootcamp-linux' (Linux, SKU: F1).
+{
+  "asyncScalingEnabled": false,
+  "elasticScaleEnabled": false,
+  "geoRegion": "East US",
+  "hyperV": false,
+  "id": "/subscriptions/03b04657-b7ac-4a69-a451-53641d1e2002/resourceGroups/rg-bootcamp-part02-compute/providers/Microsoft.Web/serverfarms/asp-bootcamp-linux",
+  "isCustomMode": false,
+  "isSpot": false,
+  "isXenon": false,
+  "kind": "linux",
+  "location": "eastus",
+  "maximumElasticWorkerCount": 1,
+  "maximumNumberOfWorkers": 0,
+  "name": "asp-bootcamp-linux",
+  "numberOfSites": 0,
+  "numberOfWorkers": 1,
+  "perSiteScaling": false,
+  "provisioningState": "Succeeded",
+  "reserved": true,
+  "resourceGroup": "rg-bootcamp-part02-compute",
+  "sku": {
+    "capacity": 1,
+    "family": "U",
+    "name": "U13",
+    "size": "U13",
+    "tier": "LinuxFree"
+  },
+  "status": "Ready",
+  "subscription": "03b04657-b7ac-4a69-a451-53641d1e2002",
+  "targetWorkerCount": 0,
+  "targetWorkerSizeId": 0,
+  "type": "Microsoft.Web/serverfarms",
+  "zoneRedundant": false
+}

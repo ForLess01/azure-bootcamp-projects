@@ -1,0 +1,41 @@
+[
+  {
+    "dni": "45892147",
+    "first_name": "Mateo",
+    "last_name": "Quispe",
+    "age": 29,
+    "marital_status": "Soltero",
+    "children": 0,
+    "monthly_income": 6800.0,
+    "monthly_expenses": 3200.0,
+    "primary_spending_categories": ["Viajes", "Restaurantes", "Moda", "Streaming", "Hoteles"],
+    "banking_segment": "Exclusive / Lifestyle",
+    "active_products": ["Cuenta Sueldo", "Tarjeta Clásica"]
+  },
+  {
+    "dni": "70124893",
+    "first_name": "Valeria",
+    "last_name": "Morales",
+    "age": 36,
+    "marital_status": "Casada",
+    "children": 2,
+    "monthly_income": 4200.0,
+    "monthly_expenses": 3600.0,
+    "primary_spending_categories": ["Educacion", "Supermercado", "Farmacia", "Colegios"],
+    "banking_segment": "Familiar / Crecimiento",
+    "active_products": ["Cuenta Sueldo"]
+  },
+  {
+    "dni": "10348756",
+    "first_name": "Carlos",
+    "last_name": "Mendoza",
+    "age": 33,
+    "marital_status": "Casado",
+    "children": 1,
+    "monthly_income": 5500.0,
+    "monthly_expenses": 3100.0,
+    "primary_spending_categories": ["Hogar", "Decoracion", "Servicios", "Supermercado"],
+    "banking_segment": "Consolidación / Hogar",
+    "active_products": ["Cuenta Sueldo", "Tarjeta Oro"]
+  }
+]

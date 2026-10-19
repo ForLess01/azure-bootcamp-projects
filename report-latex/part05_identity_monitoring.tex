@@ -1,0 +1,75 @@
+\section{Parte 5: Identidades Administradas, Key Vault y Monitoreo Automatizado}
+
+\subsection{5.1 Gobernanza de Identidades en Microsoft Entra ID y RBAC}
+Para estructurar los privilegios de acceso según el principio de mínimo privilegio (\textit{PoLP}), se creó el grupo de seguridad corporativo \textbf{\texttt{GRP\_bootcamp\_LEAD\_UTP}} en Microsoft Entra ID. Mediante el control de acceso basado en roles (\textbf{RBAC}), se le asignó el rol determinístico \texttt{Reader} a nivel de Grupo de Recursos, asegurando que los miembros auditen infraestructura sin capacidad de mutación accidental.
+
+\begin{azureterminal}[az ad group create \& az role assignment create (RBAC Reader)]
+$ az ad group create \
+    --display-name "GRP_bootcamp_LEAD_UTP" \
+    --mail-nickname "grpbootcampleadutp"
+
+$ az role assignment create \
+    --assignee-object-id "c1283ad6-c481-4651-ae46-1c163b1e814c" \
+    --assignee-principal-type "Group" \
+    --role "Reader" \
+    --scope "/subscriptions/03b04657-.../resourceGroups/rg-bootcamp-part05-identity"
+
+{
+  "principalId": "c1283ad6-c481-4651-ae46-1c163b1e814c",
+  "principalType": "Group",
+  "roleDefinitionName": "Reader",
+  "scope": "/subscriptions/.../resourceGroups/rg-bootcamp-part05-identity"
+}
+\end{azureterminal}
+
+\subsection{5.2 Acceso Sin Contraseñas entre Servicios (\textit{Managed Identity})}
+La exposición de credenciales estáticas en archivos de configuración representa una de las vulnerabilidades más críticas en la nube. Se implementó una \textbf{User-Assigned Managed Identity (UAMI)} denominada \texttt{uami-storage-reader}. Se le otorgó el rol RBAC \textbf{\texttt{Storage Blob Data Reader}} de forma directa sobre la cuenta de almacenamiento de \textit{Retail Andes} (\texttt{stretailandes64808}).
+
+\begin{archnote}[Seguridad Avanzada: Eliminación de Cadenas de Conexión]
+Con la identidad administrada asignada, cualquier recurso de cómputo en Azure solicita un token OAuth 2.0 en tiempo de ejecución al endpoint local \texttt{http://169.254.169.254/metadata/identity/oauth2/token}, autenticándose sin almacenar contraseñas, secretos o llaves en código o variables de entorno.
+\end{archnote}
+
+\begin{azureterminal}[az identity create \& az role assignment (Storage Blob Data Reader)]
+$ az identity create \
+    --name "uami-storage-reader" \
+    --resource-group "rg-bootcamp-part05-identity" \
+    --location "eastus"
+
+$ az role assignment create \
+    --assignee-object-id "9f5fca83-957c-4aec-ab99-2b6b59ed1837" \
+    --assignee-principal-type "ServicePrincipal" \
+    --role "Storage Blob Data Reader" \
+    --scope "/subscriptions/.../storageAccounts/stretailandes64808"
+
+{
+  "principalId": "9f5fca83-957c-4aec-ab99-2b6b59ed1837",
+  "roleDefinitionName": "Storage Blob Data Reader",
+  "scope": ".../storageAccounts/stretailandes64808"
+}
+\end{azureterminal}
+
+\subsection{5.3 Custodia en Azure Key Vault y Auditoría de Expiración con Logic Apps}
+Se desplegó un baúl criptográfico en **Azure Key Vault** (\texttt{kv-rendo-7935}) para la custodia de secretos con directivas de ciclo de vida. Se almacenó la cadena de conexión de base de datos asignándole una fecha estricta de vencimiento (\texttt{expires: 2026-11-18}).
+
+Para prevenir caídas operativas por certificados o claves expiradas, se construyó un flujo de trabajo serverless automatizado en **Azure Logic Apps** (\texttt{logicapp-keyvault-expiration-audit}). Este flujo se dispara diariamente mediante un disparador de recurrencia (\texttt{Recurrence}), audita los metadatos de expiración y emite alertas preventivas cuando restan menos de 30 o 15 días para el vencimiento.
+
+\begin{azureterminal}[az keyvault secret set \& az logic workflow create]
+$ az keyvault secret set \
+    --vault-name "kv-rendo-7935" \
+    --name "DbConnectionString" \
+    --value "Server=sql-rendo-p01-30337...;Database=sqldb-adventureworks" \
+    --expires "2026-11-18T00:00:00Z"
+
+$ az logic workflow create \
+    --resource-group "rg-bootcamp-part05-identity" \
+    --name "logicapp-keyvault-expiration-audit" \
+    --location "eastus" \
+    --definition @logicapp_workflow_wrapped.json
+
+{
+  "location": "eastus",
+  "name": "logicapp-keyvault-expiration-audit",
+  "provisioningState": "Succeeded",
+  "state": "Enabled"
+}
+\end{azureterminal}

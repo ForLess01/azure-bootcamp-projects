@@ -1,0 +1,15 @@
+{
+  "type": "Parquet",
+  "linkedServiceName": {
+    "referenceName": "LS_ADLS_Gen2_Bronze",
+    "type": "LinkedServiceReference"
+  },
+  "typeProperties": {
+    "location": {
+      "type": "AzureBlobFSLocation",
+      "fileSystem": "bronze",
+      "folderPath": "sales/adventureworks",
+      "fileName": "SalesOrderHeader.parquet"
+    }
+  }
+}

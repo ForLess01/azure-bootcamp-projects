@@ -1,0 +1,65 @@
+\section{Parte 4: Ingesta y Orquestación de Datos: ``Retail Andes''}
+
+\subsection{4.1 Arquitectura del Data Lakehouse (Capa Bronze con ADLS Gen2)}
+El proyecto empresarial \textbf{``Retail Andes''} implementa el patrón de arquitectura Medallion para la ingesta y analítica de datos a escala. Para la capa \textbf{Bronze} (datos crudos e inmutables), se aprovisionó una cuenta de almacenamiento \textbf{Azure Data Lake Storage Gen2} (\texttt{stretailandes64808}) con \textit{Hierarchical Namespace} (\texttt{HNS}) activado, permitiendo operaciones atómicas sobre directorios y compatibilidad nativa con sistemas de procesamiento distribuido como Apache Spark.
+
+\begin{azureterminal}[az storage account create --enable-hierarchical-namespace true]
+$ az storage account create \
+    --name "stretailandes64808" \
+    --resource-group "rg-bootcamp-part04-retail-andes" \
+    --location "eastus" \
+    --sku Standard_LRS \
+    --kind StorageV2 \
+    --enable-hierarchical-namespace true
+
+$ az storage container create --name "bronze" --account-name "stretailandes64808"
+
+{
+  "created": true,
+  "isHnsEnabled": true,
+  "name": "stretailandes64808",
+  "primaryLocation": "eastus",
+  "provisioningState": "Succeeded"
+}
+\end{azureterminal}
+
+\subsection{4.2 Orquestación y Pipelines de Datos en Azure Data Factory (ADF)}
+Se implementó la instancia de orquestación centralizada **Azure Data Factory** (\texttt{adf-retail-andes-64808}), estableciendo las abstracciones de conectividad requeridas:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Linked Service (\texttt{LS\_ADLS\_Gen2\_Bronze})}: Canal de conexión seguro mediante claves administradas hacia el endpoint DFS (\texttt{https://stretailandes64808.dfs.core.windows.net}).
+  \item \textbf{Dataset (\texttt{DS\_Bronze\_Parquet})}: Definición de estructura tipada en formato columnar binario comprimido \textbf{Apache Parquet} para optimizar espacio y velocidad de consulta analítica.
+  \item \textbf{Pipeline (\texttt{PL\_Ingesta\_Retail\_Andes\_Bronze})}: Flujo de ejecución que extrae las transacciones de ventas desde Azure SQL (\texttt{SalesLT.SalesOrderHeader}) y las deposita particionadas en la capa Bronze.
+\end{itemize}
+
+\begin{azureterminal}[az datafactory linked-service, dataset \& pipeline create]
+$ az datafactory create \
+    --resource-group "rg-bootcamp-part04-retail-andes" \
+    --name "adf-retail-andes-64808" \
+    --location "eastus"
+
+$ az datafactory linked-service create \
+    --resource-group "rg-bootcamp-part04-retail-andes" \
+    --factory-name "adf-retail-andes-64808" \
+    --linked-service-name "LS_ADLS_Gen2_Bronze" \
+    --properties @ls_adls_gen2.json
+
+$ az datafactory dataset create \
+    --resource-group "rg-bootcamp-part04-retail-andes" \
+    --factory-name "adf-retail-andes-64808" \
+    --dataset-name "DS_Bronze_Parquet" \
+    --properties @ds_bronze_parquet.json
+
+$ az datafactory pipeline create \
+    --resource-group "rg-bootcamp-part04-retail-andes" \
+    --factory-name "adf-retail-andes-64808" \
+    --pipeline-name "PL_Ingesta_Retail_Andes_Bronze" \
+    --pipeline @pipeline_retail_andes.json
+
+{
+  "name": "PL_Ingesta_Retail_Andes_Bronze",
+  "provisioningState": "Succeeded"
+}
+\end{azureterminal}
+
+\subsection{4.3 Integración con Databricks y Cargas Incrementales}
+El pipeline soporta procesamiento downstream mediante actividades parametrizadas (\texttt{Lookup} y \texttt{ForEach}) que leen marcas temporales (\textit{watermarks}) para transferencias incrementales, alimentando notebooks PySpark en Azure Databricks para su transformación hacia la capa \textit{Silver}.

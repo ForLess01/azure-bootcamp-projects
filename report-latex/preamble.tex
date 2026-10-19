@@ -1,0 +1,132 @@
+\usepackage[defaultfam]{montserrat}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot,es-noquoting]{babel}
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  top=2.2cm,
+  bottom=2.2cm,
+  left=2.0cm,
+  right=2.0cm,
+  headheight=14pt
+}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable,listings}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{tikz}
+
+% Define Colors
+\definecolor{azureblue}{HTML}{0078D4}
+\definecolor{azurenavy}{HTML}{002050}
+\definecolor{azurecyan}{HTML}{00B7C3}
+\definecolor{azuredark}{HTML}{181825}
+\definecolor{terminalbg}{HTML}{1E1E2E}
+\definecolor{termfg}{HTML}{CDD6F4}
+\definecolor{termgreen}{HTML}{A6E3A1}
+\definecolor{termcyan}{HTML}{89DCEB}
+\definecolor{termyellow}{HTML}{F9E2AF}
+\definecolor{termred}{HTML}{F38BA8}
+\definecolor{btnred}{HTML}{FF5F56}
+\definecolor{btnyellow}{HTML}{FFBD2E}
+\definecolor{btngreen}{HTML}{27C93F}
+
+% Hyperref config
+\hypersetup{
+  colorlinks=true,
+  linkcolor=azureblue,
+  filecolor=azurecyan,
+  urlcolor=azureblue,
+  citecolor=azurenavy,
+  pdftitle={Proyectos Azure Cloud & IA Agéntica - Rendo},
+  pdfauthor={Rendo},
+  pdfsubject={Azure CLI, Arquitectura Cloud, Ingesta, DevOps e IA Agéntica}
+}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{azurenavy}{\textbf{\textsf{Azure Enterprise Projects}}}}
+\fancyhead[R]{\textcolor{azureblue}{\textsf{Rendo Alfonte Tarqui}}}
+\fancyfoot[L]{\textcolor{gray}{\footnotesize \textsf{Azure CLI Automation \& Production Architecture}}}
+\fancyfoot[R]{\textcolor{azureblue}{\textbf{\thepage}}}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Section Titles Styling
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{azurenavy}}
+  {\llap{\color{azureblue}\rule[-2pt]{4pt}{1.2em}\hspace{6pt}}\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{azureblue}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{azurenavy}}
+  {\thesubsubsection}{1em}{}
+
+% Terminal Box Style as a Listing
+\newtcblisting{azureterminal}[1][]{
+  listing only,
+  colback=terminalbg,
+  coltext=termfg,
+  colframe=azurenavy!85!black,
+  arc=5pt,
+  boxrule=1pt,
+  fontupper=\ttfamily\footnotesize,
+  enhanced,
+  breakable,
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt,
+  listing options={
+    basicstyle=\ttfamily\footnotesize\color{termfg},
+    breaklines=true,
+    breakatwhitespace=true,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false
+  },
+  overlay unbroken and first={
+    \fill[btnred] ([xshift=10pt,yshift=-9pt]frame.north west) circle (3pt);
+    \fill[btnyellow] ([xshift=18pt,yshift=-9pt]frame.north west) circle (3pt);
+    \fill[btngreen] ([xshift=26pt,yshift=-9pt]frame.north west) circle (3pt);
+    \node[anchor=north, font=\sffamily\scriptsize\bfseries, text=white!80] at ([yshift=-4pt]frame.north) {#1};
+  },
+  pad at break=2mm,
+  before upper={\vspace{8pt}}
+}
+
+% Callout / Architecture Note
+\newtcolorbox{archnote}[1][Nota de Arquitectura]{
+  colback=azureblue!5!white,
+  colframe=azureblue,
+  arc=4pt,
+  boxrule=0.8pt,
+  fonttitle=\sffamily\bfseries\color{white},
+  coltitle=white,
+  title={#1},
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt
+}
+
+% Listing Style
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{termfg},
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  showstringspaces=false
+}

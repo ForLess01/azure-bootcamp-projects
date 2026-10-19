@@ -1,0 +1,29 @@
+{
+  "activities": [
+    {
+      "name": "Copy_AdventureWorks_to_Bronze_Parquet",
+      "type": "Copy",
+      "typeProperties": {
+        "source": {
+          "type": "AzureSqlSource",
+          "sqlReaderQuery": "SELECT * FROM SalesLT.SalesOrderHeader WHERE ModifiedDate >= '2008-01-01'"
+        },
+        "sink": {
+          "type": "ParquetSink",
+          "storeSettings": {
+            "type": "AzureBlobFSWriteSettings"
+          },
+          "formatSettings": {
+            "type": "ParquetWriteSettings"
+          }
+        }
+      },
+      "outputs": [
+        {
+          "referenceName": "DS_Bronze_Parquet",
+          "type": "DatasetReference"
+        }
+      ]
+    }
+  ]
+}

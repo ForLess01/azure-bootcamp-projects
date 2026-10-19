@@ -1,0 +1,98 @@
+[
+  {
+    "id": "camp-tarjeta-signature",
+    "name": "Tarjeta Visa Signature Viajes & Lifestyle",
+    "category": "Tarjetas de Credito",
+    "min_income": 4500,
+    "target_marital_status": ["Soltero", "Casado"],
+    "target_spending_categories": ["Viajes", "Restaurantes", "Moda", "Streaming"],
+    "benefits": [
+      "Bono de bienvenida de 10,000 millas",
+      "Acceso ilimitado a Salas VIP Priority Pass en aeropuertos",
+      "Seguro médico internacional de viaje hasta $150,000",
+      "Cero comisión de membresía cumpliendo consumo mensual"
+    ],
+    "max_children": 10,
+    "cta": "Solicítala en 2 minutos desde tu App"
+  },
+  {
+    "id": "camp-hipotecario-primer-hogar",
+    "name": "Crédito Hipotecario 'Tu Primer Hogar'",
+    "category": "Hipotecario",
+    "min_income": 3500,
+    "target_marital_status": ["Casado", "Conviviente"],
+    "target_spending_categories": ["Hogar", "Servicios", "Decoracion"],
+    "benefits": [
+      "Financiamiento de hasta el 90% del valor del inmueble",
+      "Plazo flexible hasta 30 años con cuotas fijas",
+      "Bono especial de equipamiento para el hogar de S/ 5,000",
+      "Tasa preferencial TEA desde 7.99%"
+    ],
+    "min_children": 0,
+    "cta": "Simula tu cuota y precalifica en línea"
+  },
+  {
+    "id": "camp-prestamo-estudios",
+    "name": "Crédito Educativo 'Futuro Brillante'",
+    "category": "Prestamos Personales",
+    "min_income": 2000,
+    "target_marital_status": ["Casado", "Conviviente", "Soltero"],
+    "target_spending_categories": ["Educacion", "Libros", "Colegios", "Universidad"],
+    "benefits": [
+      "Financiamiento del 100% de matrículas, pensiones o maestrías",
+      "Periodo de gracia de hasta 6 meses después de egresar",
+      "Desembolso directo a la institución educativa",
+      "Tasa preferencial educativa reducida"
+    ],
+    "min_children": 1,
+    "cta": "Invierte hoy en el futuro de tu familia"
+  },
+  {
+    "id": "camp-adelanto-sueldo",
+    "name": "Adelanto de Sueldo Digital",
+    "category": "Liquidez Inmediata",
+    "min_income": 1200,
+    "target_marital_status": ["Soltero", "Casado", "Divorciado"],
+    "target_spending_categories": ["Supermercado", "Farmacia", "Transporte", "Servicios"],
+    "benefits": [
+      "Hasta el 40% de tu sueldo disponible al instante",
+      "0% intereses, solo una pequeña comisión fija por transacción",
+      "Cobro automático en tu siguiente abono de haberes",
+      "Disponible 24/7 sin papeleos en la Banca Móvil"
+    ],
+    "max_children": 10,
+    "cta": "Obtén liquidez inmediata en tu App"
+  },
+  {
+    "id": "camp-seguro-proteccion-viajes",
+    "name": "Seguro de Asistencia y Viajes Familiares",
+    "category": "Seguros",
+    "min_income": 2500,
+    "target_marital_status": ["Casado", "Conviviente"],
+    "target_spending_categories": ["Viajes", "Aerolineas", "Hoteles", "Salud"],
+    "benefits": [
+      "Cobertura médica internacional integral para cónyuge e hijos",
+      "Indemnización por pérdida o retraso de equipaje",
+      "Cancelación de vuelos y repatriación asistida 24/7",
+      "Planes familiares desde S/ 39 mensuales"
+    ],
+    "min_children": 1,
+    "cta": "Viaja tranquilo con tu familia protegiéndolos hoy"
+  },
+  {
+    "id": "camp-deposito-plazo-fijo",
+    "name": "Depósito a Plazo Fijo Premium 7.5% TREA",
+    "category": "Ahorro e Inversion",
+    "min_income": 5000,
+    "target_marital_status": ["Soltero", "Casado", "Divorciado"],
+    "target_spending_categories": ["Inversiones", "Ahorro", "Fondos Mutuos"],
+    "benefits": [
+      "Rentabilidad garantizada de hasta 7.50% TREA anual",
+      "Cobertura por el Fondo de Seguro de Depósitos (FSD)",
+      "Apertura 100% digital en menos de 1 minuto",
+      "Pago de intereses mensual o al vencimiento"
+    ],
+    "max_children": 10,
+    "cta": "Haz crecer tus ahorros con la máxima seguridad"
+  }
+]

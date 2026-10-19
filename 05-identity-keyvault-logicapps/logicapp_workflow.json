@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "triggers": {
+    "Recurrence_Daily_Audit": {
+      "type": "Recurrence",
+      "recurrence": {
+        "frequency": "Day",
+        "interval": 1,
+        "schedule": {
+          "hours": [8]
+        }
+      }
+    }
+  },
+  "actions": {
+    "Initialize_Audit_Report": {
+      "type": "InitializeVariable",
+      "inputs": {
+        "variables": [
+          {
+            "name": "AuditStatus",
+            "type": "string",
+            "value": "KeyVault Secret Expiration Check: 30-day threshold active"
+          }
+        ]
+      }
+    }
+  },
+  "outputs": {}
+}
